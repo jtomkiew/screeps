@@ -6,14 +6,14 @@ var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 
-var creepLevel300 = [[300],[WORK,WORK,CARRY,MOVE]]; // 300 energy
-var creepLevel400 = [[350],[WORK,WORK,CARRY,MOVE,MOVE]]; // 350 energy
-var creepLevel550 = [[500],[WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE]]; // 500 energy
-var creepLevel800 = [[500],[WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE]]; // 800 energy
+var creepLevel_300 = [[300],[WORK,WORK,CARRY,MOVE]]; // 300 energy
+var creepLevel_400 = [[350],[WORK,WORK,CARRY,MOVE,MOVE]]; // 350 energy
+var creepLevel_550 = [[500],[WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE]]; // 500 energy
+var creepLevel_800 = [[800],[WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE]]; // 800 energy
 
-var NO_OF_HARVESTERS = 3;
-var NO_OF_UPGRADERS = 5;
-var NO_OF_BUILDERS = 4;
+var MAX_HARVESTERS = 3;
+var MAX_UPGRADERS = 5;
+var MAX_BUILDERS = 4;
 
 module.exports.loop = function () {
 
@@ -30,14 +30,14 @@ module.exports.loop = function () {
     var energyCurrent = spawn.room.energyAvailable;
     var energyMax = spawn.room.energyCapacityAvailable;
     console.log('Room "'+spawn.room.name+'" energy: '+energyCurrent+'/'+energyMax);
-    if(energyMax >= creepLevel550[0][0]){
-        var currentCreepLevel = creepLevel550;
+    if(energyMax >= creepLevel_550[0][0]){
+        var currentCreepLevel = creepLevel_550;
     }
-    else if(energyMax >= creepLevel400[0][0]){
-        var currentCreepLevel = creepLevel400;
+    else if(energyMax >= creepLevel_400[0][0]){
+        var currentCreepLevel = creepLevel_400;
     }
     else{
-        var currentCreepLevel = creepLevel300;
+        var currentCreepLevel = creepLevel_300;
     }
     
     // HARVESTERS
@@ -45,9 +45,9 @@ module.exports.loop = function () {
     console.log('Harvesters: ' + harvesters.length);
     // BACKUP
     if(harvesters.length == 0 && energyCurrent < currentCreepLevel[0][0]){
-        currentCreepLevel = creepLevel300;
+        currentCreepLevel = creepLevel_300;
     }
-    if(harvesters.length < NO_OF_HARVESTERS) {
+    if(harvesters.length < MAX_HARVESTERS) {
         var newName = spawn.createCreep(currentCreepLevel[1], undefined, {role: 'harvester'});
         console.log('Spawning new harvester: ' + newName);
     }
@@ -55,7 +55,7 @@ module.exports.loop = function () {
         // UPGRADERS
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
         console.log('Upgraders: ' + upgraders.length);
-        if(upgraders.length < NO_OF_UPGRADERS) {
+        if(upgraders.length < MAX_UPGRADERS) {
             var newName = spawn.createCreep(currentCreepLevel[1], undefined, {role: 'upgrader'});
             console.log('Spawning new upgrader: ' + newName);
         }
@@ -63,7 +63,7 @@ module.exports.loop = function () {
             // BUILDERS
             var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
             console.log('Builders: ' + builders.length);
-            if(builders.length < NO_OF_BUILDERS) {
+            if(builders.length < MAX_BUILDERS) {
                 var newName = spawn.createCreep(currentCreepLevel[1], undefined, {role: 'builder'});
                 console.log('Spawning new builder: ' + newName);
             }
