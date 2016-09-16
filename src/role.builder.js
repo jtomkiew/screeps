@@ -33,7 +33,9 @@ var roleBuilder = {
                     }
                 });
                 if(closestDamagedStructure) {
-                    creep.repair(closestDamagedStructure);
+                    if(creep.repair(closestDamagedStructure) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(closestDamagedStructure);
+                    }
                 }
                 else{
                     var site = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
