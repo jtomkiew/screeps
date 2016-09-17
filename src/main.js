@@ -5,6 +5,7 @@
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
+var towerHandler = require('towerHandler');
 
 var creepLevel_300 = [[300],[WORK,WORK,CARRY,MOVE]]; // 300 energy
 var creepLevel_400 = [[350],[WORK,WORK,CARRY,MOVE,MOVE]]; // 350 energy
@@ -27,26 +28,8 @@ module.exports.loop = function () {
     var spawn = Game.spawns['Spawn1']
 
     // TOWERS
-    var towers = spawn.room.find(FIND_MY_STRUCTURES, {
-                    filter: (structure) => {
-                        return (structure.structureType == STRUCTURE_TOWER &&
-                                structure.energy >= 10);
-                    }
-    });
-    towers.forEach(tower => {
-        var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        if(closestHostile) {
-            tower.attack(closestHostile);
-        }
-
-        var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-            filter: (structure) => structure.hits < structure.hitsMax
-        });
-        if(closestDamagedStructure) {
-            tower.repair(closestDamagedStructure);
-        }
-    });
-
+    towerHandler(spawn.room);
+    
     // ENERGY
     var energyCurrent = spawn.room.energyAvailable;
     var energyMax = spawn.room.energyCapacityAvailable;
