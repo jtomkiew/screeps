@@ -11,9 +11,9 @@ var creepLevel_400 = [[350],[WORK,WORK,CARRY,MOVE,MOVE]]; // 350 energy
 var creepLevel_550 = [[500],[WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE]]; // 500 energy
 var creepLevel_800 = [[800],[WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE]]; // 800 energy
 
-var MAX_HARVESTERS = 3;
+var MAX_HARVESTERS = 4;
 var MAX_UPGRADERS = 3;
-var MAX_BUILDERS = 3;
+var MAX_BUILDERS = 2;
 
 module.exports.loop = function () {
     // CLEANUP
@@ -51,7 +51,10 @@ module.exports.loop = function () {
     var energyCurrent = spawn.room.energyAvailable;
     var energyMax = spawn.room.energyCapacityAvailable;
     console.log('Room "'+spawn.room.name+'" energy: '+energyCurrent+'/'+energyMax);
-    if(energyMax >= creepLevel_550[0][0]){
+    if(energyMax >= creepLevel_800[0][0]){
+        var currentCreepLevel = creepLevel_800;
+    }
+    else if(energyMax >= creepLevel_550[0][0]){
         var currentCreepLevel = creepLevel_550;
     }
     else if(energyMax >= creepLevel_400[0][0]){
