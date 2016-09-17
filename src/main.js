@@ -14,7 +14,7 @@ var creepLevel_800 = [[800],[WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE,
 
 var MAX_HARVESTERS = 4;
 var MAX_UPGRADERS = 1;
-var MAX_BUILDERS = 0;
+var MAX_BUILDERS = 1;
 
 module.exports.loop = function () {
     // CLEANUP
