@@ -15,10 +15,24 @@ var towerHandler = {
             }
 
             var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-                filter: (structure) => structure.hits < structure.hitsMax
+                filter: (structure) => {
+                    return (structure.structureType != STRUCTURE_WALL &&
+                            structure.hits < structure.hitsMax);
+                    }
             });
             if(closestDamagedStructure) {
                 tower.repair(closestDamagedStructure);
+            }
+            else{
+                closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (structure.structureType == STRUCTURE_WALL &&
+                                structure.hits < structure.hitsMax);
+                        }
+                });
+                if(closestDamagedStructure) {
+                    tower.repair(closestDamagedStructure);
+                }
             }
         });
 	}
