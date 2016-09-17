@@ -30,11 +30,10 @@ module.exports.loop = function () {
     var towers = spawn.room.find(FIND_MY_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType == STRUCTURE_TOWER &&
-                                structure.energy > 10);
+                                structure.energy >= 10);
                     }
     });
     towers.forEach(tower => {
-        console.log(tower)
         var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
         if(closestHostile) {
             tower.attack(closestHostile);
