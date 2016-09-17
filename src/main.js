@@ -49,7 +49,7 @@ module.exports.loop = function () {
     
     // HARVESTERS
     var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
-    console.log('Harvesters: ' + harvesters.length);
+    console.log('Harvesters: ' + harvesters.length + '/' + MAX_HARVESTERS);
     // BACKUP
     if(harvesters.length == 0 && energyCurrent < currentCreepLevel[0][0]){
         currentCreepLevel = creepLevel_300;
@@ -61,7 +61,7 @@ module.exports.loop = function () {
     else{
         // UPGRADERS
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
-        console.log('Upgraders: ' + upgraders.length);
+        console.log('Upgraders: ' + upgraders.length + '/' + MAX_UPGRADERS);
         if(upgraders.length < MAX_UPGRADERS) {
             var newName = spawn.createCreep(currentCreepLevel[1], undefined, {role: 'upgrader'});
             console.log('Spawning new upgrader: ' + newName);
@@ -69,7 +69,7 @@ module.exports.loop = function () {
         else{
             // BUILDERS
             var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
-            console.log('Builders: ' + builders.length);
+            console.log('Builders: ' + builders.length + '/' + MAX_BUILDERS);
             if(builders.length < MAX_BUILDERS) {
                 var newName = spawn.createCreep(currentCreepLevel[1], undefined, {role: 'builder'});
                 console.log('Spawning new builder: ' + newName);
