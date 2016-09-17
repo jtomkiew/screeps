@@ -28,7 +28,7 @@ module.exports.loop = function () {
     var spawn = Game.spawns['Spawn1']
 
     // TOWERS
-    towerHandler(spawn.room);
+    towerHandler.run(spawn.room);
     
     // ENERGY
     var energyCurrent = spawn.room.energyAvailable;
