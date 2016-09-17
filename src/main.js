@@ -16,9 +16,6 @@ var MAX_UPGRADERS = 4;
 var MAX_BUILDERS = 3;
 
 module.exports.loop = function () {
-
-    var spawn = Game.spawns['Spawn1']
-    
     // CLEANUP
     for(var name in Memory.creeps) {
         if(!Game.creeps[name]) {
@@ -26,7 +23,33 @@ module.exports.loop = function () {
             console.log('Clearing non-existing creep memory:', name);
         }
     }
-    
+
+    var spawn = Game.spawns['Spawn1']
+
+    // TOWERS
+    var towers = spawn.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (structure.structureType == STRUCTURE_TOWER &&
+                                structure.energy > 0);
+                    }
+    });
+    for(var tower in towers){
+        if(tower) {
+            var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+            if(closestHostile) {
+                tower.attack(closestHostile);
+            }
+
+            var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+                filter: (structure) => structure.hits < structure.hitsMax
+            });
+            if(closestDamagedStructure) {
+                tower.repair(closestDamagedStructure);
+            }
+        }
+    }
+
+    // ENERGY
     var energyCurrent = spawn.room.energyAvailable;
     var energyMax = spawn.room.energyCapacityAvailable;
     console.log('Room "'+spawn.room.name+'" energy: '+energyCurrent+'/'+energyMax);
