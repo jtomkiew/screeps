@@ -1,29 +1,60 @@
-var roleUpgrader = {
+var S_COLLECT = 0;
+var S_UPGRADE = 1;
 
-    /** @param {Creep} creep **/
-    run: function(creep) {
+var upgraderRole = {
 
-        if(creep.memory.upgrading && creep.carry.energy == 0) {
-            creep.memory.upgrading = false;
-            creep.say('harvesting');
-	    }
-	    if(!creep.memory.upgrading && creep.carry.energy == creep.carryCapacity) {
-	        creep.memory.upgrading = true;
-	        creep.say('upgrading');
-	    }
+    baseParts: [WORK,WORK,CARRY,MOVE], // 300e
+    levelUpParts: [WORK,CARRY,MOVE,MOVE], // 250e
+    maxLevel: 3,
+    roleName: 'upgrader',
 
-	    if(creep.memory.upgrading) {
-            if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(creep.room.controller);
-            }
+    _collect: function(creep, source, canTakeFromSpawn) {
+        if(creep.carry.energy == creep.carryCapacity){
+            creep.memory.state = S_UPGRADE;
+            return;
         }
-        else {
-            var sources = creep.room.find(FIND_SOURCES);
-            if(creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[0]);
-            }
+        if(!canTakeFromSpawn){
+            creep.memory.state = S_UPGRADE;
+            return;
         }
-	}
+        if(source.transferEnergy(creep) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(source);
+            return;
+        }
+    },
+
+    _upgrade: function(creep) {
+        if(creep.carry.energy == 0) {
+            creep.memory.state = S_COLLECT;
+            return;
+	    }
+        if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(creep.room.controller);
+            return;
+        }
+    },
+
+    run: function(creep, source, canTakeFromSpawn) {
+        if(creep.memory.state == undefined) {
+            creep.memory.state = S_COLLECT;
+        }
+        if(creep.memory.state == S_COLLECT) {
+            this._collect(creep, source, canTakeFromSpawn);
+        }
+        if(creep.memory.state == S_UPGRADE) {
+            this._upgrade(creep);
+        }
+	},
+
+    manage: function(spawner, maxUpgraders, canTakeFromSpawn) {
+        var upgraders = _.filter(Game.creeps, (creep) => {
+            return (creep.memory.role == this.roleName);
+        });
+        if(upgraders.length < maxUpgraders) {
+            spawner.tryCreate(this);
+        }
+        upgraders.forEach(u => this.run(u, spawner.spawns[0], canTakeFromSpawn));
+    }
 };
 
-module.exports = roleUpgrader;
+module.exports = upgraderRole;

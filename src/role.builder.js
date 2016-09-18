@@ -1,48 +1,80 @@
-var roleBuilder = {
+var UpgraderRole = require('role.upgrader');
 
-    /** @param {Creep} creep **/
-    run: function(creep) {
+var S_COLLECT = 0;
+var S_MAINTAIN = 1;
 
-	    if(creep.memory.building && creep.carry.energy == 0) {
-            creep.memory.building = false;
-            creep.say('harvesting');
-	    }
-	    if(!creep.memory.building && creep.carry.energy == creep.carryCapacity) {
-	        creep.memory.building = true;
-	        creep.say('building');
-	    }
+var builderRole = {
 
-	    if(creep.memory.building) {
-	        var site = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
-            if(site) {
-                if(creep.build(site) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(site);
-                }
-            }
-            else{
-                var closestDamagedStructure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return (structure.structureType != STRUCTURE_WALL && 
-                                structure.hits < structure.hitsMax);
-                    }
-                });
-                if(closestDamagedStructure) {
-                    if(creep.repair(closestDamagedStructure) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(closestDamagedStructure);
-                    }
-                }
-                else{
-                    creep.moveTo(33,33);
-                }
-            }
+    baseParts: [WORK,WORK,CARRY,MOVE], // 300e
+    levelUpParts: [WORK,CARRY,MOVE,MOVE], // 250e
+    maxLevel: 3,
+    roleName: 'builder',
+
+    _build: function(creep, structure) {
+        if(creep.build(structure) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(structure);
+            creep.build(structure);
+        }
+    },
+
+    _repair: function(creep, structure) {
+        if(creep.repair(structure) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(structure);
+            creep.repair(structure);
+        }
+    },
+
+    _maintain: function(creep, structure) {
+        if(creep.carry.energy == 0) {
+            creep.memory.state = S_COLLECT;
+            return;
 	    }
-	    else {
-	        var sources = creep.room.find(FIND_SOURCES);
-            if(creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[0]);
-            }
-	    }
-	}
+        if(!structure) {
+            return;
+        }
+        if(structure.progress < structure.progressTotal) {
+            this._build(creep, structure);
+            return;
+        }
+        if(structure.hits < structure.hitsMax) {
+            this._repair(creep, structure);
+            return;
+        }
+        creep.memory.state = S_COLLECT;
+    },
+
+    run: function(creep, source, structure, canTakeFromSpawn) {
+        if(creep.memory.state == undefined) {
+            creep.memory.state = S_COLLECT;
+        }
+        if(creep.memory.state == S_COLLECT) {
+            UpgraderRole._collect(creep, source, canTakeFromSpawn);
+        }
+        if(creep.memory.state == S_MAINTAIN) {
+            this._maintain(creep, structure);
+        }
+	},
+
+    manage: function(room, spawner, maxBuilders, canTakeFromSpawn) {
+        var structures = room.find(FIND_STRUCTURES, {
+            filter: (s => s.hits < s.hitsMax)
+        });
+        var constructions = room.find(FIND_CONSTRUCTION_SITES, {
+            filter: (s => s.my)
+        });
+
+        var allSites = [];
+        allSites = allSites.concat(constructions);
+        allSites = allSites.concat(structures);
+
+        var builders = _.filter(Game.creeps, (creep) => {
+            return (creep.memory.role == this.roleName);
+        });
+        if(allSites.length > 0 && builders.length < maxBuilders) {
+            spawner.tryCreate(this);
+        }
+        builders.forEach(b => this.run(b, spawner.spawns[0], allSites[0], canTakeFromSpawn));
+    }
 };
 
-module.exports = roleBuilder;
+module.exports = builderRole;
