@@ -38,7 +38,7 @@ var spawner = {
         var parts = roleObject.baseParts;
         var moreParts = parts.concat(roleObject.levelUpParts);
         var level = 0;
-        while(this.calculatePartCost(moreParts) <= this.getEnergyCapacity() && level++ < roleObject.maxLevel) {
+        while((this.calculatePartCost(moreParts) < this.getEnergyCapacity()) && (level++ < roleObject.maxLevel)) {
             parts = moreParts;
             moreParts = parts.concat(roleObject.levelUpParts);
         }

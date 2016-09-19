@@ -7,7 +7,7 @@ var Spawner = require('structure.spawner');
 var Tower = require('structure.tower');
 
 var MIN_MINERS = 2;
-var MIN_HAULERS = 2;
+var MIN_HAULERS = 1;
 
 module.exports.loop = function () {
 
@@ -15,7 +15,7 @@ module.exports.loop = function () {
     var room = Spawner.spawns[0].room;
     
     var minerCount = MinerRole.manage(room, Spawner, 2);
-    var haulerCount = HaulerRole.manage(room, Spawner, 2);
+    var haulerCount = HaulerRole.manage(room, Spawner, 1);
     var canTakeFromSpawn = true;
 
     if(minerCount < MIN_MINERS || haulerCount < MIN_HAULERS) {
