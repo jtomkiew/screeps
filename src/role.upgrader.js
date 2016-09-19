@@ -54,6 +54,7 @@ var upgraderRole = {
             spawner.tryCreate(this);
         }
         upgraders.forEach(u => this.run(u, spawner.spawns[0], canTakeFromSpawn));
+        return upgraders.length;
     }
 };
 

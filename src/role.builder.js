@@ -74,6 +74,7 @@ var builderRole = {
             spawner.tryCreate(this);
         }
         builders.forEach(b => this.run(b, spawner.spawns[0], allSites[0], canTakeFromSpawn));
+        return builders.length;
     }
 };
 

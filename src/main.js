@@ -21,8 +21,8 @@ module.exports.loop = function () {
     if(minerCount < MIN_MINERS || haulerCount < MIN_HAULERS) {
         canTakeFromSpawn = false;
     }
-    UpgraderRole.manage(Spawner, 2, canTakeFromSpawn);
-    BuilderRole.manage(room, Spawner, 1, canTakeFromSpawn);
-
+    var upgraderCount = UpgraderRole.manage(Spawner, 2, canTakeFromSpawn);
+    var builderCount = BuilderRole.manage(room, Spawner, 1, canTakeFromSpawn);
+    console.log('STATUS: minerCount: ' + minerCount + ', haulerCount: ' + haulerCount + ', upgraderCount: ' + upgraderCount + ', builderCount: ' + builderCount);
     Tower.run(room);
 }
