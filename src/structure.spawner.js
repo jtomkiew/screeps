@@ -36,12 +36,8 @@ var spawner = {
 
     tryCreate: function(roleObject, parentId) {
         var parts = roleObject.baseParts;
-        var moreParts = parts.concat(roleObject.levelUpParts);
-        var level = 0;
-        while((this.calculatePartCost(moreParts) < this.getEnergyAvailable()) && (level++ < roleObject.maxLevel)) {
-            parts = moreParts;
-            moreParts = parts.concat(roleObject.levelUpParts);
-        }
+        if (this.getEnergyAvailable() >= 550)
+            parts = parts.concat(roleObject.levelUpParts);
 
         try {
             this.spawns.forEach(spawn => {
